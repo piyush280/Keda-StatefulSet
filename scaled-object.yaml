@@ -1,0 +1,35 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  annotations:
+    profile: rabbitmq-app
+  labels:
+    operator: demo
+  name: demo-scaledobject
+spec:
+  cooldownPeriod: 600
+  maxReplicaCount: 3
+  minReplicaCount: 1
+  scaleTargetRef:
+    envSourceContainerName: container-name
+    kind: StatefulSet
+    name: statefulset-name
+  triggers:
+  - metadata:
+      hostFromEnv: AMQP_FQDN
+      mode: QueueLength # QueueLength or MessageRate
+      queueName: demo_queue.Customer
+      value: "1000" # message backlog or publish/sec.
+    type: rabbitmq
+  - metadata:
+      hostFromEnv: AMQP_FQDN
+      mode: QueueLength # QueueLength or MessageRate
+      queueName: demo_queue.CustomerMapping
+      value: "1000"
+    type: rabbitmq
+  - metadata:
+      hostFromEnv: AMQP_FQDN
+      mode: QueueLength # QueueLength or MessageRate
+      queueName: demo_queue.ContractPricing
+      value: "1000"
+    type: rabbitmq
